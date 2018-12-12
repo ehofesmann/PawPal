@@ -1,3 +1,9 @@
+import sys
+
+darkflow_dir = '/z/home/erichof/school/504/project/yolo/darkflow'
+
+sys.path.insert(0,darkflow_dir)
+
 from darkflow.net.build import TFNet
 import cv2 
 import os
@@ -7,6 +13,7 @@ import tensorflow as tf
 import argparse
 from c3d.checkpoint_utils import load_checkpoint, initialize_from_dict
 from c3d.c3d_model import C3D 
+import time
 
 
 use_softmax = True
@@ -128,12 +135,16 @@ def process_video(video, class_path, act, vidnum):
         buffer_frames = []
         prev_minx = -1
         prev_dog_on_couch=0
+        prev_diff2 = 100000
         for i in range(framecount):
+            ft = time.time()
             _, frame = current.read()
             # print(frame.shape)
             # Appends the frames
             video_as_array.append(frame)
+            yt = time.time()
             result = tfnet.return_predict(frame)
+            print("yolo: ", time.time()-yt)
             # Appends the bounding box results
             video_result.append(result)
             dog_found=0
@@ -145,6 +156,7 @@ def process_video(video, class_path, act, vidnum):
             max_patch = 0
             max_buff = [-1,i]
             max_conf = 0
+            min_diff = 100000
             for cl in result:
                 if (cl['label'] == 'dog'):
                     minx = cl['topleft']['x']
@@ -160,14 +172,36 @@ def process_video(video, class_path, act, vidnum):
                     buff = [i, minx, miny, w, h]
                     patch = cv2.resize(video_as_array[i][miny:(miny+h), minx:(minx+w), :], (112,112), interpolation = cv2.INTER_CUBIC)
                     dog_found=1
-                    if max_conf < cl['confidence']:
-                        max_conf = cl['confidence']
+                   # if min_diff!=10000:
+                   #     if prev_diff2 > min_diff - 
+                    if len(buffer_store) > 0:
+                        if abs(buffer_store[-1][1]-minx) < min_diff:
+                            if prev_diff2*1.5 > abs(min_diff - abs(buffer_store[-1][1]-minx)):
+                    #if max_conf < cl['confidence']:
+                     #   max_conf = cl['confidence']
+                                max_patch = patch
+                                max_buff = buff
+                                best_minx=minx
+                                best_miny=miny
+                                best_maxx=maxx
+                                best_maxy=maxy
+                                prev_diff = abs(min_diff - abs(buffer_store[-1][1]-minx))
+                                min_diff = abs(buffer_store[-1][1]-minx)
+                    else:
                         max_patch = patch
                         max_buff = buff
                         best_minx=minx
                         best_miny=miny
                         best_maxx=maxx
                         best_maxy=maxy
+                    #if max_conf < cl['confidence']:
+                    #    max_conf = cl['confidence']
+                    #    max_patch = patch
+                    #    max_buff = buff
+                    #    best_minx=minx
+                    #    best_miny=miny
+                    #    best_maxx=maxx
+                    #    best_maxy=maxy
             
                 if(cl['label']=='sofa' or cl['label']=='chair' or cl['label']=='diningtable' or cl['label']=='couch'):
                     cminx.append(cl['topleft']['x'])
@@ -287,7 +321,9 @@ def process_video(video, class_path, act, vidnum):
                 output_pred = 0
                 if to_process!=[]:
                     clip = np.array(to_process)
+                    ct = time.time()
                     output_pred = sess.run([logits], feed_dict={input_data_tensor: [clip]})[0].argmax()
+                    print('c3d time: ', time.time()-ct)
 
                 if output_pred:
                     for bf in buffer_frames:
@@ -309,6 +345,7 @@ def process_video(video, class_path, act, vidnum):
              #    # to_cccd.append(to_process)
                 to_process = []
                 buffer_store = []
+            print("frame time: ", time.time()-ft)
         for bf in buffer_frames:
             if output_pred ==1:
                 cv2.putText(bf,'Biting!',(30,30),font,1,fontColor2,lineType)
@@ -327,13 +364,13 @@ parser.add_argument('--classname', action='store', type=str, default='none')
 args = parser.parse_args()
 vidnum = args.vidnum
 
-data_path = 'data_set/'
+data_path = '../data_set/'
 
-options = {"model": "cfg/yolo.cfg", "load": "bin/yolo.weights", "threshold": 0.1}
+options = {"model": os.path.join(darkflow_dir, "cfg/yolo.cfg"), "load": os.path.join(darkflow_dir,"bin/yolo.weights"), "threshold": 0.1}
 
 tfnet = TFNet(options)
 
-(root, subdir, files) = os.walk('data_set')
+(root, subdir, files) = os.walk(data_path)
 
 to_cccd = []
 
