@@ -13,3 +13,15 @@ Tensorflow, Numpy, OpenCV
 
 ## Results
 
+
+
+## Training
+
+### Dataset
+Dog biting vs non biting tfrecords dataset [Download link](https://umich.box.com/s/jptvbcuig2ieejmhhv7p8kic7t3vraeu)
+
+### Activity Recognition Model
+Install M-PACT and copy  modify C3D to freeze all conv3d_layers up to conv5a
+
+
+
