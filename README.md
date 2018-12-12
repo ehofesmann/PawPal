@@ -6,7 +6,7 @@ Using state-of-the-art computer vision algorithms, this dog localization and act
 ## Requirements
 Python3, Tensorflow, Numpy, OpenCV
 
-[Darkflow](https://github.com/thtrieu/darkflow) and Yolo
+[Darkflow](https://github.com/thtrieu/darkflow) for Yolo
 
 [M-PACT](https://github.com/MichiganCOG/M-PACT) Activity Recognition Platform
 
