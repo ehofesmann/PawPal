@@ -3,6 +3,9 @@ Entertaining and Training your dog while you are away.
 
 Using state-of-the-art computer vision algorithms, this dog localization and activity recognition system can determine what your dog is doing from a home surveillance camera.
 
+![](https://github.com/ehofesmann/PawPal/blob/master/images/pipeline.png)
+
+
 ## Requirements
 Python3, Tensorflow, Numpy, OpenCV
 
