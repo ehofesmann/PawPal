@@ -40,7 +40,7 @@ Dog biting vs non biting tfrecords dataset [Download link](https://umich.box.com
 
 
 #### Activity Recognition Model
-Install M-PACT and copy c3d_frozen into the models directory of M-PACT
+Install M-PACT and copy ```PawPal/c3d/c3d_frozen``` into the models directory of M-PACT
 
 
 
