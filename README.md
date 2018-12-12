@@ -13,12 +13,18 @@ Tensorflow, Numpy, OpenCV
 
 ## Results
 
+![](https://github.com/ehofesmann/PawPal/blob/master/images/biting.png)
+![](https://github.com/ehofesmann/PawPal/blob/master/images/furniture.png)
+
 
 
 ## Training
 
 ### Dataset
 Dog biting vs non biting tfrecords dataset [Download link](https://umich.box.com/s/jptvbcuig2ieejmhhv7p8kic7t3vraeu)
+
+![](https://github.com/ehofesmann/PawPal/blob/master/images/data.png)
+
 
 ### Activity Recognition Model
 Install M-PACT and copy  modify C3D to freeze all conv3d_layers up to conv5a
