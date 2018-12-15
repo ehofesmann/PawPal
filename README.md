@@ -46,6 +46,7 @@ Detailed installation instructions below.
 
 Install OpenCV (verified to work with version 3.3.0)
 
+Follow instructions below to install darkflow and PawPal
 ```
 git clone https://github.com/thtrieu/darkflow
 virtualenv -p python3.5 env
