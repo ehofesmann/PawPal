@@ -28,12 +28,12 @@ import time
 
 use_softmax = True
 
-
+# Initialize the C3D model and load the saved checkpoint
 ckpt = load_checkpoint(532)
 
 model = C3D(modelName='c3d', inputDims=16, outputDims=2, expName='c3d_dog_frozen_3_newdat', numVids=1, clipLength=16)
 
-
+# Create the tensorflow graph that will take input clips and get the prediction of C3D
 input_data_tensor = tf.placeholder(tf.float32, shape=(1,16,112,112,3))
 istraining = False
 input_dims = 16
@@ -106,7 +106,9 @@ lineType               = 5
 
 
 def process_video(video_path):
-
+    '''
+    The main function which loads the given video, passes the frames through yolo, and buffers the frames in a clip to pass to C3D.
+    '''
     if os.path.isfile(video_path):
         video_result =[]
         video_as_array = []
@@ -128,6 +130,7 @@ def process_video(video_path):
         prev_minx = -1
         prev_dog_on_couch=0
         prev_diff2 = 100000
+        count=0
         for i in range(framecount):
             ft = time.time()
             _, frame = current.read()
@@ -149,6 +152,7 @@ def process_video(video_path):
             max_conf = 0
             min_diff = 100000
             for cl in result:
+                # Find the max confidence bounding box for a dog
                 if (cl['label'] == 'dog'):
                     minx = cl['topleft']['x']
                     miny = cl['topleft']['y']
@@ -163,6 +167,7 @@ def process_video(video_path):
                     buff = [i, minx, miny, w, h]
                     patch = cv2.resize(video_as_array[i][miny:(miny+h), minx:(minx+w), :], (112,112), interpolation = cv2.INTER_CUBIC)
                     dog_found=1
+                    # Select the bounding box similar to the one in the previous frame
                     if len(buffer_store) > 0:
                         if abs(buffer_store[-1][1]-minx) < min_diff:
                             if prev_diff2*1.5 > abs(min_diff - abs(buffer_store[-1][1]-minx)):
@@ -182,7 +187,7 @@ def process_video(video_path):
                         best_maxx=maxx
                         best_maxy=maxy
 
-            
+                # Find all furniture bboxes
                 if(cl['label']=='sofa' or cl['label']=='chair' or cl['label']=='diningtable' or cl['label']=='couch'):
                     cminx.append(cl['topleft']['x'])
                     cminy.append(cl['topleft']['y'])
@@ -191,11 +196,10 @@ def process_video(video_path):
                     couches_found+=1
                 
             to_process.append(max_patch)
-                    # Also store the video frame where dog label doesn't exists
             buffer_store.append(max_buff)
 
             
-
+            # Print on the output video if the dog was previously on the furniture
             if(dog_found==0):
                 if prev_minx!=-1:
                     if prev_dog_on_couch==1:
@@ -206,6 +210,8 @@ def process_video(video_path):
             
             
             print(i)
+            
+            # Print on the output video if the dog is on the furniture
             flaggg=0
             if(dog_found==1 and couches_found>0):
                 cv2.rectangle(frame, (best_minx, best_miny), (best_maxx, best_maxy), (0,255,0), 2)
@@ -285,6 +291,8 @@ def process_video(video_path):
                             break
 
                 output_pred = 0
+                # Get biting prediction from C3D
+                # Each input to activity recognition architecture will be a batch of 16 video frames
                 if to_process!=[]:
                     clip = np.array(to_process)
                     ct = time.time()
@@ -303,7 +311,6 @@ def process_video(video_path):
                 
                     
             
-                # Each input to activity recognition architecture will be a batch of 16 video frames
                 count += 1
                 to_process = []
                 buffer_store = []
