@@ -1,7 +1,16 @@
 import sys
 
+
+
+##############  IMPORTANT !!!!!! ###############
+# Enter your darkflow install directory below  #
+################################################
+
 darkflow_dir = '/z/home/erichof/school/504/project/yolo/darkflow'
+
 #darkflow_dir = '/path/to/darkflow'
+
+assert(darkflow_dir!='/path/to/darkflow')
 
 sys.path.insert(0,darkflow_dir)
 
@@ -88,8 +97,6 @@ def is_dog_on_couch(dxmin,dxmax,dymin,dymax,cxmin,cxmax,cymin,cymax):
     else:
         return 0
 
-# Root[1] contains the list of all the subdirectories in the data_set folder
-# Parse these folders to get the videos
 
 font                   = cv2.FONT_HERSHEY_SIMPLEX
 fontScale              = 2
@@ -98,29 +105,20 @@ fontColor2              = (0,75,255)
 lineType               = 5
 
 
-#or act in root[1]:
-def process_video(video, class_path, act, vidnum):
- #   class_path = data_path + act
+def process_video(video_path):
 
-#    for video in os.listdir(class_path):
-    count = 0
-    video_path = class_path + '/' + video
     if os.path.isfile(video_path):
         video_result =[]
         video_as_array = []
-        # Capture each Video
         current = cv2.VideoCapture(video_path)
         framecount = int(current.get(cv2.CAP_PROP_FRAME_COUNT))
         frames_ps=int(current.get(cv2.CAP_PROP_FPS))
         width = int(current.get(cv2.CAP_PROP_FRAME_WIDTH))   # float
         height = int(current.get(cv2.CAP_PROP_FRAME_HEIGHT)) # float
         fourcc = cv2.VideoWriter_fourcc(*'DIVX')  # 'x264' doesn't work
-        writer = cv2.VideoWriter(os.path.join('bbox_outputs','trial'+str(vidnum)+'.avi'),fourcc, frames_ps, (width,height))
-      #   writer = cv2.VideoWriter('trial1.mp4',-1,1,(width,height))
-      #   print(framecount)
+        writer = cv2.VideoWriter(os.path.join('bbox_outputs',video_path.split('/')[-1].split('.')[0]+'.avi'),fourcc, frames_ps, (width,height))
         batches = int(framecount/16)
         to_process = []
-        # To interpolate for missing dog frames
         buffer_store = []
         print(framecount)
         print(width)
@@ -132,7 +130,6 @@ def process_video(video, class_path, act, vidnum):
         for i in range(framecount):
             ft = time.time()
             _, frame = current.read()
-            # print(frame.shape)
             # Appends the frames
             video_as_array.append(frame)
             yt = time.time()
@@ -165,13 +162,9 @@ def process_video(video, class_path, act, vidnum):
                     buff = [i, minx, miny, w, h]
                     patch = cv2.resize(video_as_array[i][miny:(miny+h), minx:(minx+w), :], (112,112), interpolation = cv2.INTER_CUBIC)
                     dog_found=1
-                   # if min_diff!=10000:
-                   #     if prev_diff2 > min_diff - 
                     if len(buffer_store) > 0:
                         if abs(buffer_store[-1][1]-minx) < min_diff:
                             if prev_diff2*1.5 > abs(min_diff - abs(buffer_store[-1][1]-minx)):
-                    #if max_conf < cl['confidence']:
-                     #   max_conf = cl['confidence']
                                 max_patch = patch
                                 max_buff = buff
                                 best_minx=minx
@@ -187,21 +180,13 @@ def process_video(video, class_path, act, vidnum):
                         best_miny=miny
                         best_maxx=maxx
                         best_maxy=maxy
-                    #if max_conf < cl['confidence']:
-                    #    max_conf = cl['confidence']
-                    #    max_patch = patch
-                    #    max_buff = buff
-                    #    best_minx=minx
-                    #    best_miny=miny
-                    #    best_maxx=maxx
-                    #    best_maxy=maxy
+
             
                 if(cl['label']=='sofa' or cl['label']=='chair' or cl['label']=='diningtable' or cl['label']=='couch'):
                     cminx.append(cl['topleft']['x'])
                     cminy.append(cl['topleft']['y'])
                     cmaxx.append(cl['bottomright']['x'])
                     cmaxy.append(cl['bottomright']['y'])
-             #        cv2.rectangle(frame, (cl['topleft']['x'], cl['topleft']['y']), (cl['bottomright']['x'], cl['bottomright']['y']), (255,0,0), 2)
                     couches_found+=1
                 
             to_process.append(max_patch)
@@ -211,19 +196,12 @@ def process_video(video, class_path, act, vidnum):
             
 
             if(dog_found==0):
-         #        writer.write(frame)
                 if prev_minx!=-1:
-               #     buffer_frames.append(frame)
-               # else:
                     if prev_dog_on_couch==1:
                         cv2.rectangle(frame, (prev_minx, prev_miny), (prev_maxx, prev_maxy), (0,0,255), 2)
                         cv2.putText(frame,'Dog on furniture!',bottomLeftCornerOfText,font,fontScale,fontColor,lineType)
-                        #writer.write(frame)
-                        #buffer_frames.append(frame)
                     else:
                         cv2.rectangle(frame, (prev_minx, prev_miny), (prev_maxx, prev_maxy), (0,255,0), 2)
-                        #writer.write(frame)
-                        #buffer_frames.append(frame)
             
             
             print(i)
@@ -241,16 +219,10 @@ def process_video(video, class_path, act, vidnum):
                         flaggg=1
                         w+=1
                         if(w==1):
-           #                  cv2.rectangle(frame, (cminx[q], cminy[q]), (cmaxx[q], cmaxy[q]), (0,0,255), 2)
                             cv2.rectangle(frame, (minx, miny), (maxx, maxy), (0,0,255), 2)
-            #                 prev_minx=minx
-             #                prev_miny=miny
-              #               prev_maxx=maxx
-               #              prev_maxy=maxy
                             prev_dog_on_couch=1
                             bottomLeftCornerOfText = (int(np.floor(width/2))-100,100)
                             cv2.putText(frame,'Dog on furniture!',bottomLeftCornerOfText,font,fontScale,fontColor,lineType)
-                ##writer.write(frame)
             
                 if(flaggg==1):
                     print('dog on couch!')
@@ -332,10 +304,6 @@ def process_video(video, class_path, act, vidnum):
             
                 # Each input to activity recognition architecture will be a batch of 16 video frames
                 count += 1
-             #    file_name = 'process_data/' + act + '_' + video.split('.')[0] + '_' + str(count) + '.npy'
-             #    print(count)
-             #    np.save(file_name, np.array(to_process, dtype=object))
-             #    # to_cccd.append(to_process)
                 to_process = []
                 buffer_store = []
             print("frame time: ", time.time()-ft)
@@ -348,59 +316,17 @@ def process_video(video, class_path, act, vidnum):
         writer.release()
 
 
-#os.environ['CUDA_VISIBLE_DEVICES'] = ''
 parser = argparse.ArgumentParser()
-parser.add_argument('--vidnum', action='store', type=int, required=True)
-parser.add_argument('--vidname', action='store', type=str, default='none')
-parser.add_argument('--classname', action='store', type=str, default='none')
+parser.add_argument('--vidpath', action='store', type=int, required=True, help='/path/to/video.avi')
 
 args = parser.parse_args()
-vidnum = args.vidnum
 
-data_path = 'data_set/'
 
 options = {"model": os.path.join(darkflow_dir, "cfg/yolo.cfg"), "load": os.path.join(darkflow_dir,"bin/yolo.weights"), "threshold": 0.1}
 
 tfnet = TFNet(options)
 
-(root, subdir, files) = os.walk(data_path)
+vidname = args.vidpath
 
-to_cccd = []
+process_video(vidpath)
 
-
-# Root[1] contains the list of all the subdirectories in the data_set folder 
-# Parse these folders to get the videos
-act1 = root[1][0]
-act2 = root[1][1]
-
-class_path1 = data_path + act1
-class_path2 = data_path + act2
-
-vidname = args.vidname
-classname = args.classname
-
-if vidname =='none':
-    c1vids = os.listdir(class_path1)
-    c1vids.sort()
-    c2vids = os.listdir(class_path2)
-    c2vids.sort()
-    
-    vidnum2 = vidnum%len(c1vids)
-    if vidnum < len(c1vids):
-        video = c1vids[vidnum]
-        process_video(video, class_path1, act1, vidnum)
-        print(video, act1, 'act1')
-    
-    elif vidnum2 < len(c2vids):
-        video = c2vids[vidnum2]
-        process_video(video, class_path2, act2, vidnum)
-        print(video, act2, 'act2')
-    
-    else:
-        print('No videos remaining')
-
-else:
-    if classname == 'biting':
-        process_video(vidname, class_path2, act2, int(vidname.split('_')[0]))
-    else:
-        process_video(vidname, class_path, act, int(vidname.split('_')[0]))
