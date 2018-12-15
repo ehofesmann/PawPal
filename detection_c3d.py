@@ -1,7 +1,6 @@
 import sys
 
-darkflow_dir = '/z/home/erichof/school/504/project/yolo/darkflow'
-#darkflow_dir = '/path/to/darkflow'
+darkflow_dir = '/path/to/darkflow'
 
 sys.path.insert(0,darkflow_dir)
 
