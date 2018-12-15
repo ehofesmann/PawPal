@@ -71,6 +71,9 @@ Download yolo.weights [Download link](https://drive.google.com/drive/folders/0B1
 ```
 mv ~/Downloads/checkpoint-532.npy ../weights/
 mv ~/Downloads/yolo.weights ../darkflow/bin/
+```
+Update the /path/to/darkflow in detect_video.py
+```
 python detect_video.py --vidpath example/example1.mp4
 ```
 
