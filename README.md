@@ -29,7 +29,7 @@ Across 5 splits given in ```tfrecords_pawpal/split.npy``` in the dataset downloa
 ### Requirements
 Python 3.5
 
-OpenCV 3.3.0
+OpenCV 
 
 Tensorflow 1.0.0
 
@@ -44,8 +44,6 @@ Detailed installation instructions below.
 
 ### Installation and Setup
 
-Install OpenCV (verified to work with version 3.3.0)
-
 Follow instructions below to install darkflow and PawPal
 ```
 git clone https://github.com/thtrieu/darkflow
@@ -53,6 +51,7 @@ virtualenv -p python3.5 env
 source env/bin/activate
 pip install tensorflow==1.0.0 
 pip install Cython 
+pip install opencv-python
 cd darkflow
 sudo apt-get install python3 python-dev python3-dev \
      build-essential libssl-dev libffi-dev \
