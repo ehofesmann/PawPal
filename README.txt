@@ -1,3 +1,16 @@
+
+
+##################################
+ README IS BEST VIEWED ON GITHUB:
+https://github.com/ehofesmann/PawPal/
+
+##################################
+
+
+
+
+
+
 # PawPal
 Entertaining and Training your dog while you are away.
 
