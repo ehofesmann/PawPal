@@ -6,13 +6,6 @@ Using state-of-the-art computer vision algorithms, this dog localization and act
 ![](https://github.com/ehofesmann/PawPal/blob/master/images/pipeline.png)
 
 
-## Requirements
-Python3, Tensorflow, Numpy, OpenCV
-
-[Darkflow](https://github.com/thtrieu/darkflow) for Yolo
-
-[M-PACT](https://github.com/MichiganCOG/M-PACT) Activity Recognition Platform
-
 
 ## Results
 ![](https://github.com/ehofesmann/PawPal/blob/master/images/furniture.png)
@@ -31,18 +24,64 @@ Across 5 splits given in ```tfrecords_pawpal/split.npy``` in the dataset downloa
 
 ## Usage
 
-### Setup
+
+
+### Requirements
+Python 3.5
+
+OpenCV 3.3.0
+
+Tensorflow 1.0.0
+
+Cython
+
+
+[Darkflow](https://github.com/thtrieu/darkflow) for Yolo
+
+[M-PACT](https://github.com/MichiganCOG/M-PACT) Activity Recognition Platform
+
+Detailed installation instructions below.
+
+### Installation and Setup
+
+Install OpenCV (verified to work with version 3.3.0)
+
+```
+git clone https://github.com/thtrieu/darkflow
+virtualenv -p python3.5 env
+source env/bin/activate
+pip install tensorflow==1.0.0 
+pip install Cython 
+cd darkflow
+sudo apt-get install python3 python-dev python3-dev \
+     build-essential libssl-dev libffi-dev \
+     libxml2-dev libxslt1-dev zlib1g-dev \
+     python-pip
+pip install -e .
+flow  (ignore any errors)
+cd ..
+git clone https://github.com/ehofesmann/PawPal/
+cd PawPal
+mkdir ../weights/
+
+```
 Download the weights for C3D [Download link](https://umich.box.com/s/va0jkzx6ym0vb4k6909sxebjijne0uez)
 
+Download yolo.weights [Download link](https://drive.google.com/drive/folders/0B1tW_VtY7onidEwyQ2FtQVplWEU)
+```
+mv ~/Downloads/checkpoint-532.npy ../weights/
+mv ~/Downloads/yolo.weights ../darkflow/bin/
+python detect_video.py --vidpath example/example1.mp4
+```
 Add the weight file to ```PawPal/c3d/```.
 
 ### Testing
 
 ```
-python detection_c3d.py --vidnum 0
+python detect_video.py --vidpath example/example1.mp4
 ```
 
-### Training
+### Training or Finetuneing
 
 #### Dataset
 Dog biting vs non biting tfrecords dataset [Download link](https://umich.box.com/s/jptvbcuig2ieejmhhv7p8kic7t3vraeu)
