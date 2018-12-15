@@ -6,7 +6,7 @@ import sys
 # Enter your darkflow install directory below  #
 ################################################
 
-darkflow_dir = '/z/home/erichof/school/504/project/yolo/darkflow'
+darkflow_dir = '../darkflow'
 
 #darkflow_dir = '/path/to/darkflow'
 
@@ -110,13 +110,14 @@ def process_video(video_path):
     if os.path.isfile(video_path):
         video_result =[]
         video_as_array = []
+        print(video_path)
         current = cv2.VideoCapture(video_path)
         framecount = int(current.get(cv2.CAP_PROP_FRAME_COUNT))
         frames_ps=int(current.get(cv2.CAP_PROP_FPS))
         width = int(current.get(cv2.CAP_PROP_FRAME_WIDTH))   # float
         height = int(current.get(cv2.CAP_PROP_FRAME_HEIGHT)) # float
         fourcc = cv2.VideoWriter_fourcc(*'DIVX')  # 'x264' doesn't work
-        writer = cv2.VideoWriter(os.path.join('bbox_outputs',video_path.split('/')[-1].split('.')[0]+'.avi'),fourcc, frames_ps, (width,height))
+        writer = cv2.VideoWriter(os.path.join('bbox_outputs',video_path.split('/')[-1]),fourcc, frames_ps, (width,height))
         batches = int(framecount/16)
         to_process = []
         buffer_store = []
@@ -317,7 +318,7 @@ def process_video(video_path):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--vidpath', action='store', type=int, required=True, help='/path/to/video.avi')
+parser.add_argument('--vidpath', action='store', type=str, required=True, help='/path/to/video.avi')
 
 args = parser.parse_args()
 
@@ -326,7 +327,7 @@ options = {"model": os.path.join(darkflow_dir, "cfg/yolo.cfg"), "load": os.path.
 
 tfnet = TFNet(options)
 
-vidname = args.vidpath
+vidpath = args.vidpath
 
 process_video(vidpath)
 

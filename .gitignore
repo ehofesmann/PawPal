@@ -1,1 +1,3 @@
-bbox_outputs
+bbox_outputs/*
+c3d/__pycache__*
+*.pyc
