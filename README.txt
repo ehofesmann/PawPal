@@ -75,14 +75,13 @@ flow  (ignore any errors)
 cd ..
 git clone https://github.com/ehofesmann/PawPal/
 cd PawPal
-mkdir ../weights/
 
 ```
 Download the weights for C3D [Download link](https://umich.box.com/s/va0jkzx6ym0vb4k6909sxebjijne0uez)
 
 Download yolo.weights [Download link](https://drive.google.com/drive/folders/0B1tW_VtY7onidEwyQ2FtQVplWEU)
 ```
-mv ~/Downloads/checkpoint-532.npy ../weights/
+mv ~/Downloads/checkpoint-532.npy ./c3d/
 mv ~/Downloads/yolo.weights ../darkflow/bin/
 ```
 Update the /path/to/darkflow in detect_video.py
