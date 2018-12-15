@@ -74,7 +74,6 @@ mv ~/Downloads/checkpoint-532.npy ../weights/
 mv ~/Downloads/yolo.weights ../darkflow/bin/
 python detect_video.py --vidpath example/example1.mp4
 ```
-Add the weight file to ```PawPal/c3d/```.
 
 ### Testing
 
